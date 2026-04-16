@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>App de estudos para certificações Salesforce</description>
+    <formFactors>Large</formFactors>
+    <formFactors>Small</formFactors>
+    <label>Doni APP</label>
+    <navType>Standard</navType>
+    <tabs>standard-Account</tabs>
+    <tabs>standard-Contact</tabs>
+    <tabs>Certificacao__c</tabs>
+    <tabs>DominioCertificacao__c</tabs>
+    <tabs>Topico__c</tabs>
+    <tabs>Questao__c</tabs>
+    <tabs>AlternativaQuestao__c</tabs>
+    <tabs>ProgressoQuestaoUsuario__c</tabs>
+    <tabs>SessaoEstudo__c</tabs>
+    <tabs>TentativaQuestao__c</tabs>
+    <tabs>TentativaAlternativa__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

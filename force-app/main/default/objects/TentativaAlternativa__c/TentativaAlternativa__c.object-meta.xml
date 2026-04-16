@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableFeeds>false</enableFeeds>
+    <label>Tentativa de Alternativa</label>
+    <nameField>
+        <label>Nome</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Tentativas de Alternativa</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+    <fields>
+        <fullName>TentativaQuestao__c</fullName>
+        <externalId>false</externalId>
+        <label>Tentativa de Questão</label>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <referenceTo>TentativaQuestao__c</referenceTo>
+        <relationshipLabel>Alternativas Respondidas</relationshipLabel>
+        <relationshipName>AlternativasRespondidas</relationshipName>
+    </fields>
+    <fields>
+        <fullName>AlternativaQuestao__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <externalId>false</externalId>
+        <label>Alternativa da Questão</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+        <referenceTo>AlternativaQuestao__c</referenceTo>
+        <relationshipLabel>Tentativas</relationshipLabel>
+        <relationshipName>Tentativas</relationshipName>
+    </fields>
+    <fields>
+        <fullName>Selecionada__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Selecionada</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>CorretaNoMomento__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Correta no Momento</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

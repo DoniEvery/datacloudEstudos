@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableFeeds>false</enableFeeds>
+    <label>Alternativa de Questão</label>
+    <nameField>
+        <label>Nome</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Alternativas de Questão</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+    <fields>
+        <fullName>Questao__c</fullName>
+        <externalId>false</externalId>
+        <label>Questão</label>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <referenceTo>Questao__c</referenceTo>
+        <relationshipLabel>Alternativas</relationshipLabel>
+        <relationshipName>Alternativas</relationshipName>
+    </fields>
+    <fields>
+        <fullName>TextoAlternativa__c</fullName>
+        <externalId>false</externalId>
+        <label>Texto da Alternativa</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Correta__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Correta</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>ExplicacaoAlternativa__c</fullName>
+        <externalId>false</externalId>
+        <label>Explicação da Alternativa</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>OrdemExibicao__c</fullName>
+        <externalId>false</externalId>
+        <label>Ordem de Exibição</label>
+        <precision>3</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Ativa__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Ativa</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

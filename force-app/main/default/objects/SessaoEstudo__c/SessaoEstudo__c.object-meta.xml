@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <enableFeeds>false</enableFeeds>
+    <label>Sessão de Estudo</label>
+    <nameField>
+        <label>Nome da Sessão</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Sessões de Estudo</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+    <fields>
+        <fullName>Usuario__c</fullName>
+        <externalId>false</externalId>
+        <label>Usuário</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>Sessões de Estudo</relationshipLabel>
+        <relationshipName>SessoesEstudo</relationshipName>
+    </fields>
+    <fields>
+        <fullName>Certificacao__c</fullName>
+        <externalId>false</externalId>
+        <label>Certificação</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+        <referenceTo>Certificacao__c</referenceTo>
+        <relationshipLabel>Sessões de Estudo</relationshipLabel>
+        <relationshipName>SessoesEstudo</relationshipName>
+    </fields>
+    <fields>
+        <fullName>IniciadaEm__c</fullName>
+        <defaultValue>NOW()</defaultValue>
+        <externalId>false</externalId>
+        <label>Iniciada em</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>FinalizadaEm__c</fullName>
+        <externalId>false</externalId>
+        <label>Finalizada em</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>TipoSessao__c</fullName>
+        <externalId>false</externalId>
+        <label>Tipo de Sessão</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>RevisaoDiaria</fullName>
+                    <default>true</default>
+                    <label>Revisão Diária</label>
+                </value>
+                <value>
+                    <fullName>TreinoLivre</fullName>
+                    <default>false</default>
+                    <label>Treino Livre</label>
+                </value>
+                <value>
+                    <fullName>Simulado</fullName>
+                    <default>false</default>
+                    <label>Simulado</label>
+                </value>
+                <value>
+                    <fullName>Reforco</fullName>
+                    <default>false</default>
+                    <label>Reforço</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>QuantidadeQuestoes__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Quantidade de Questões</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>QuantidadeAcertos__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Quantidade de Acertos</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>QuantidadeErros__c</fullName>
+        <defaultValue>0</defaultValue>
+        <externalId>false</externalId>
+        <label>Quantidade de Erros</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>DuracaoMinutos__c</fullName>
+        <externalId>false</externalId>
+        <label>Duração (Minutos)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Ativa__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Ativa</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>
