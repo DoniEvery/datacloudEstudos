@@ -1,0 +1,24 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/.sf": true,
+    "**/.sfdx": true
+  },
+  "xml.preferences.showSchemaDocumentationType": "none",
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#FFA01B",
+    "statusBar.foreground": "#000000",
+    "statusBarItem.hoverBackground": "#8b8680",
+    "statusBarItem.activeBackground": "#8b8680",
+    "statusBar.border": "#FFA01B",
+    "activityBar.activeBackground": "#8b8680",
+    "activityBar.activeBorder": "#8b8680",
+    "activityBar.background": "#FFA01B",
+    "activityBar.foreground": "#000000",
+    "titleBar.activeBackground": "#FFA01B",
+    "titleBar.activeForeground": "#000000",
+    "titleBar.border": "#FFA01B",
+    "titleBar.inactiveBackground": "#FFA01B"
+  }
+}
