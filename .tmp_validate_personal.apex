@@ -1,0 +1,11 @@
+Id certId = [SELECT Id FROM Certificacao__c ORDER BY CreatedDate DESC LIMIT 1].Id;
+List<Map<String,Object>> tops = QuestaoEstudoController.getTopicos(certId);
+System.debug('TOPICOS=' + tops.size());
+Id qId = [SELECT Id FROM Questao__c ORDER BY CreatedDate ASC LIMIT 1].Id;
+Map<String,Object> r = QuestaoEstudoController.registrarResposta(qId, true);
+System.debug('REG=' + r);
+Id uid = UserInfo.getUserId();
+ProgressoQuestaoUsuario__c p = [SELECT Id, OwnerId, Questao__c, Intervalo__c, ProximaRevisao__c FROM ProgressoQuestaoUsuario__c WHERE Questao__c=:qId AND OwnerId=:uid ORDER BY LastModifiedDate DESC LIMIT 1];
+System.debug('PROG_OWNER_OK=' + (p.OwnerId == uid));
+TentativaQuestao__c t = [SELECT Id, OwnerId, Questao__c, ProgressoQuestaoUsuario__c FROM TentativaQuestao__c WHERE Questao__c=:qId AND OwnerId=:uid ORDER BY CreatedDate DESC LIMIT 1];
+System.debug('TENT_OWNER_OK=' + (t.OwnerId == uid));

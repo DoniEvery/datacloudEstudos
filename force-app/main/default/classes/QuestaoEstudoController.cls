@@ -58,8 +58,51 @@ public with sharing class QuestaoEstudoController {
         return value == null ? null : String.valueOf(value);
     }
     
+    private static List<SObject> ordenarQuestoesPorRevisao(List<SObject> questoes) {
+        if (questoes.isEmpty()) {
+            return questoes;
+        }
+
+        Set<Id> qIdsForProgress = new Set<Id>();
+        for (SObject q : questoes) {
+            qIdsForProgress.add((Id) q.get('Id'));
+        }
+
+        Map<Id, Date> proximaRevisaoPorQuestao = new Map<Id, Date>();
+        for (ProgressoQuestaoUsuario__c p : [
+            SELECT Questao__c, ProximaRevisao__c
+            FROM ProgressoQuestaoUsuario__c
+            WHERE Questao__c IN :qIdsForProgress
+            AND OwnerId = :UserInfo.getUserId()
+        ]) {
+            proximaRevisaoPorQuestao.put(p.Questao__c, p.ProximaRevisao__c);
+        }
+
+        Date hoje = Date.today();
+        List<SObject> novas = new List<SObject>();
+        List<SObject> vencidas = new List<SObject>();
+        List<SObject> futuras = new List<SObject>();
+
+        for (SObject q : questoes) {
+            Date pr = proximaRevisaoPorQuestao.get((Id) q.get('Id'));
+            if (pr == null) {
+                novas.add(q);
+            } else if (pr <= hoje) {
+                vencidas.add(q);
+            } else {
+                futuras.add(q);
+            }
+        }
+
+        List<SObject> ordenadas = new List<SObject>();
+        ordenadas.addAll(novas);
+        ordenadas.addAll(vencidas);
+        ordenadas.addAll(futuras);
+        return ordenadas;
+    }
+
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getQuestoes(Id topicoId) {
+    public static List<Map<String, Object>> getQuestoes(Id topicoId, Id certificacaoId, Boolean incluirTodosTopicos) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
 
         Map<String, Schema.SObjectField> questaoFields = Schema.SObjectType.Questao__c.fields.getMap();
@@ -74,11 +117,35 @@ public with sharing class QuestaoEstudoController {
         if (!String.isBlank(qExplicacaoField) && !qSelectFields.contains(qExplicacaoField)) qSelectFields.add(qExplicacaoField);
         if (!String.isBlank(qAtivaField) && !qSelectFields.contains(qAtivaField)) qSelectFields.add(qAtivaField);
 
+        Set<Id> topicoIds = new Set<Id>();
+        if (Boolean.valueOf(incluirTodosTopicos)) {
+            if (certificacaoId == null) {
+                return result;
+            }
+            for (Topico__c t : [
+                SELECT Id
+                FROM Topico__c
+                WHERE DominioCertificacao__r.Certificacao__c = :certificacaoId
+                ORDER BY CreatedDate ASC
+            ]) {
+                topicoIds.add(t.Id);
+            }
+        } else {
+            if (topicoId == null) {
+                return result;
+            }
+            topicoIds.add(topicoId);
+        }
+
+        if (topicoIds.isEmpty()) {
+            return result;
+        }
+
         String qSoql = 'SELECT ' + String.join(qSelectFields, ', ')
-            + ' FROM Questao__c WHERE TopicoPrincipal__c = :topicoId';
+            + ' FROM Questao__c WHERE TopicoPrincipal__c IN :topicoIds';
         qSoql += ' ORDER BY CreatedDate ASC';
 
-        List<SObject> questoes = Database.query(qSoql);
+        List<SObject> questoes = ordenarQuestoesPorRevisao(Database.query(qSoql));
 
         Map<String, Schema.SObjectField> alternativaFields = Schema.SObjectType.AlternativaQuestao__c.fields.getMap();
         String aTextoField = pickField(alternativaFields, new List<String>{ 'TextoAlternativa__c', 'Texto__c', 'Descricao__c', 'Name' });
@@ -151,15 +218,95 @@ public with sharing class QuestaoEstudoController {
 
         return result;
     }
-    
+
+    @AuraEnabled
+    public static Map<String, Object> registrarResposta(Id questaoId, Boolean acertou) {
+        Id currentUserId = UserInfo.getUserId();
+        List<ProgressoQuestaoUsuario__c> progressos = [
+            SELECT Id, Intervalo__c, ProximaRevisao__c
+            FROM ProgressoQuestaoUsuario__c
+            WHERE Questao__c = :questaoId AND OwnerId = :currentUserId
+            LIMIT 1
+        ];
+
+        Integer intervaloAtual = 0;
+        ProgressoQuestaoUsuario__c progresso;
+        if (!progressos.isEmpty()) {
+            progresso = progressos[0];
+            intervaloAtual = progresso.Intervalo__c == null ? 0 : progresso.Intervalo__c.intValue();
+        } else {
+            progresso = new ProgressoQuestaoUsuario__c(
+                Questao__c = questaoId,
+                OwnerId = currentUserId,
+                Name = String.valueOf(questaoId).left(40)
+            );
+        }
+
+        Integer novoIntervalo;
+        if (acertou) {
+            if (intervaloAtual <= 1)       novoIntervalo = 3;
+            else if (intervaloAtual <= 3)  novoIntervalo = 7;
+            else if (intervaloAtual <= 7)  novoIntervalo = 14;
+            else if (intervaloAtual <= 14) novoIntervalo = 30;
+            else                           novoIntervalo = 60;
+        } else {
+            novoIntervalo = 1;
+        }
+
+        Date proximaRevisao = Date.today().addDays(novoIntervalo);
+        progresso.Intervalo__c = novoIntervalo;
+        progresso.ProximaRevisao__c = proximaRevisao;
+
+        if (progresso.Id == null) {
+            insert progresso;
+        } else {
+            update progresso;
+        }
+
+        insert new TentativaQuestao__c(
+            Name = String.valueOf(System.currentTimeMillis()).left(80),
+            OwnerId = currentUserId,
+            Questao__c = questaoId,
+            ProgressoQuestaoUsuario__c = progresso.Id,
+            RespondidaEm__c = DateTime.now(),
+            NotaQualidade__c = acertou ? 5 : 1
+        );
+
+        return new Map<String, Object>{
+            'intervalo' => novoIntervalo,
+            'proximaRevisao' => String.valueOf(proximaRevisao)
+        };
+    }
+
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getTopicos() {
+    public static List<Map<String, Object>> getCertificacoes() {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
+
+        for (Certificacao__c c : [
+            SELECT Id, Name
+            FROM Certificacao__c
+            ORDER BY Name ASC
+        ]) {
+            result.add(new Map<String, Object>{
+                'id' => c.Id,
+                'name' => c.Name
+            });
+        }
+
+        return result;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getTopicos(Id certificacaoId) {
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        if (certificacaoId == null) {
+            return result;
+        }
         
         for (Topico__c t : [
             SELECT Id, Name, DominioCertificacao__c, DominioCertificacao__r.Name
             FROM Topico__c
-            WHERE Ativo__c = true
+            WHERE DominioCertificacao__r.Certificacao__c = :certificacaoId
             ORDER BY OrdemExibicao__c ASC
         ]) {
             Map<String, Object> tMap = new Map<String, Object>();

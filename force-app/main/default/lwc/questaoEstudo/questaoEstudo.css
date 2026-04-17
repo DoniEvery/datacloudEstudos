@@ -200,6 +200,17 @@
     margin-bottom: 5px;
 }
 
+.proxima-revisao {
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background-color: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
 .btn-proximo {
     width: 100%;
     padding: 12px;
