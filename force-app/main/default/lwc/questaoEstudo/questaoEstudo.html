@@ -1,0 +1,88 @@
+<template>
+    <div class="questao-container">
+        <!-- Seletor de Tópico -->
+        <div class="selector-section">
+            <label>Selecione um Tópico:</label>
+            <select onchange={handleTopicoChange} disabled={isLoading}>
+                <option value="">-- Escolha um tópico --</option>
+                <template for:each={topicos} for:item="topico">
+                    <option key={topico.id} value={topico.id}>
+                        {topico.name} ({topico.dominio})
+                    </option>
+                </template>
+            </select>
+        </div>
+
+        <!-- Exibição da Questão -->
+        <template if:true={questaoAtual}>
+            <div class="questao-box">
+                <div class="questao-header">
+                    <h2>{questaoAtual.enunciado}</h2>
+                    <span class="nivel-badge" data-nivel={questaoAtual.nivel}>
+                        {questaoAtual.nivel}
+                    </span>
+                </div>
+
+                <div class="alternativas-container">
+                    <template for:each={questaoAtual.alternativas} for:item="alt">
+                        <button 
+                            key={alt.id} 
+                            class="{getAlternativaClass(alt)}"
+                            onclick={handleAlternativaClick}
+                            data-id={alt.id}
+                            data-correta={alt.correta}
+                            data-ordem={alt.ordem}
+                            disabled={mostrarResultado}>
+                            <span class="letra">{getLetraFromOrdem(alt.ordem)}</span>
+                            <span class="texto">{alt.texto}</span>
+                            <template if:true={mostrarResultado}>
+                                <span class="icone">
+                                    <template if:true={alt.correta}>✓</template>
+                                    <template if:false={alt.correta}>✗</template>
+                                </span>
+                            </template>
+                        </button>
+                    </template>
+                </div>
+
+                <template if:true={mostrarResultado}>
+                    <div class="{getResultadoClass}">
+                        <p>{mensagemResultado}</p>
+                        <template if:true={mostrarRespostaCorreta}>
+                            <div class="explicacao">
+                                <strong>Resposta correta:</strong> {respostaCorreta}
+                            </div>
+                        </template>
+                        <template if:true={questaoAtual.explicacao}>
+                            <div class="explicacao">
+                                <strong>Explicação:</strong> {questaoAtual.explicacao}
+                            </div>
+                        </template>
+                    </div>
+
+                    <button 
+                        class="btn-proximo" 
+                        onclick={handleProxima}>
+                        Próxima Questão
+                    </button>
+                </template>
+            </div>
+
+            <div class="progresso">
+                Questão {indexAtual + 1} de {totalQuestoes}
+            </div>
+        </template>
+
+        <!-- Mensagem quando nenhum tópico selecionado -->
+        <template if:false={questaoAtual}>
+            <div class="mensagem-info">
+                Selecione um tópico para começar a estudar.
+            </div>
+        </template>
+
+        <!-- Loading -->
+        <template if:true={isLoading}>
+            <div class="loading">Carregando...</div>
+        </template>
+    </div>
+</template>
