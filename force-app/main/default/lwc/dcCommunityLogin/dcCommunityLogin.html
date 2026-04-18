@@ -1,0 +1,37 @@
+<template>
+    <div class="container">
+        <div class="card">
+            <h2>Entrar</h2>
+
+            <template lwc:if={error}>
+                <div class="error">{error}</div>
+            </template>
+
+            <lightning-input
+                type="email"
+                label="E-mail"
+                variant="label-hidden"
+                placeholder="E-mail"
+                onchange={handleUsernameChange}
+            ></lightning-input>
+
+            <lightning-input
+                type="password"
+                label="Senha"
+                variant="label-hidden"
+                placeholder="Senha"
+                onchange={handlePasswordChange}
+            ></lightning-input>
+
+            <lightning-button
+                variant="brand"
+                label="Entrar"
+                onclick={handleLogin}
+                disabled={isLoading}
+            ></lightning-button>
+
+            <button class="btn-link" onclick={goToForgotPassword}>Esqueci minha senha</button>
+            <button class="btn-link" onclick={goToSelfRegister}>Primeiro acesso</button>
+        </div>
+    </div>
+</template>
