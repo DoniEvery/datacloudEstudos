@@ -15,6 +15,19 @@ global class LightningLoginFormController {
             return ex.getMessage();            
         }
     }
+
+    @AuraEnabled
+    public static String loginLwc(String username, String password, String startUrl) {
+        try {
+            ApexPages.PageReference lgn = Site.login(username, password, startUrl);
+            if (lgn != null) {
+                return lgn.getUrl();
+            }
+            return null;
+        } catch (Exception ex) {
+            return ex.getMessage();
+        }
+    }
     
     @AuraEnabled
     public static Boolean getIsUsernamePasswordEnabled() {

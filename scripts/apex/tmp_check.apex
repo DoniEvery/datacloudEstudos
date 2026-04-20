@@ -1,0 +1,1 @@
+List<String> fnames = new List<String>(); for(String fn : Schema.getGlobalDescribe().get('Questao__c').getDescribe().fields.getMap().keySet()){ fnames.add(fn); } fnames.sort(); System.debug('FIELDS: ' + fnames);

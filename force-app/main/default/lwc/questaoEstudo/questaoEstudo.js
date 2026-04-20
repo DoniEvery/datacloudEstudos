@@ -1,15 +1,15 @@
-import { LightningElement, wire } from 'lwc';
+import { LightningElement } from 'lwc';
 import getCertificacoes from '@salesforce/apex/QuestaoEstudoController.getCertificacoes';
 import getTopicos from '@salesforce/apex/QuestaoEstudoController.getTopicos';
+import getSubtopicos from '@salesforce/apex/QuestaoEstudoController.getSubtopicos';
 import getQuestoes from '@salesforce/apex/QuestaoEstudoController.getQuestoes';
 import registrarResposta from '@salesforce/apex/QuestaoEstudoController.registrarResposta';
 
 export default class QuestaoEstudo extends LightningElement {
-    static TODOS_TOPICOS_VALUE = '__ALL__';
-
     certificacoes = [];
     certificacaoSelecionada = null;
     topicos = [];
+    subtopicos = [];
     questoes = [];
     questaoAtual = null;
     indexAtual = 0;
@@ -22,6 +22,8 @@ export default class QuestaoEstudo extends LightningElement {
     proximaRevisaoLabel = '';
     isLoading = false;
     topicoSelecionado = null;
+    explicacaoSelecionada = '';
+    explicacaoCorreta = '';
 
     connectedCallback() {
         this.carregarCertificacoes();
@@ -41,6 +43,7 @@ export default class QuestaoEstudo extends LightningElement {
         this.certificacaoSelecionada = event.target.value;
         this.topicoSelecionado = null;
         this.topicos = [];
+        this.subtopicos = [];
         this.resetQuestoes();
 
         if (this.certificacaoSelecionada) {
@@ -59,9 +62,21 @@ export default class QuestaoEstudo extends LightningElement {
 
     handleTopicoChange(event) {
         this.topicoSelecionado = event.target.value;
+        this.subtopicos = [];
 
         if (this.temFiltroValido) {
             this.isLoading = true;
+
+            // Carregar subtópicos do tópico pai (domínio) selecionado
+            getSubtopicos({ topicoId: null, dominioId: this.topicoSelecionado })
+                .then((data) => {
+                    this.subtopicos = data;
+                })
+                .catch((error) => {
+                    console.error('Erro ao carregar subtópicos:', error);
+                });
+            
+            // Carregar questões automaticamente
             this.carregarQuestoes();
         } else {
             this.resetQuestoes();
@@ -72,8 +87,8 @@ export default class QuestaoEstudo extends LightningElement {
         return !!this.certificacaoSelecionada && !!this.topicoSelecionado;
     }
 
-    get estudandoTodosTopicos() {
-        return this.topicoSelecionado === QuestaoEstudo.TODOS_TOPICOS_VALUE;
+    get temSubtopicos() {
+        return this.subtopicos && this.subtopicos.length > 0;
     }
 
     resetQuestoes() {
@@ -85,9 +100,10 @@ export default class QuestaoEstudo extends LightningElement {
 
     carregarQuestoes() {
         getQuestoes({
-            topicoId: this.estudandoTodosTopicos ? null : this.topicoSelecionado,
+            topicoId: null,
+            dominioId: this.topicoSelecionado,
             certificacaoId: this.certificacaoSelecionada,
-            incluirTodosTopicos: this.estudandoTodosTopicos
+            incluirTodosTopicos: false
         })
             .then((result) => {
                 this.questoes = result;
@@ -115,6 +131,8 @@ export default class QuestaoEstudo extends LightningElement {
             this.respostaCorreta = '';
             this.acertou = false;
             this.proximaRevisaoLabel = '';
+            this.explicacaoSelecionada = '';
+            this.explicacaoCorreta = '';
         }
     }
 
@@ -122,20 +140,25 @@ export default class QuestaoEstudo extends LightningElement {
         const botao = event.currentTarget;
         const alternativaId = botao.dataset.id;
         const ehCorreta = botao.dataset.correta === 'true';
+        const alternativaSelecionada = this.questaoAtual?.alternativas?.find((alt) => alt.id === alternativaId);
+        const altCorreta = this.questaoAtual?.alternativas?.find((alt) => alt.correta);
+        const explicacaoGeral = this.questaoAtual?.explicacao || '';
 
         this.alternativaSelecionada = alternativaId;
         this.mostrarResultado = true;
         this.acertou = ehCorreta;
+        this.explicacaoSelecionada = alternativaSelecionada?.explicacao || explicacaoGeral;
+        this.explicacaoCorreta = '';
 
         if (ehCorreta) {
             this.mensagemResultado = '✓ Resposta Correta!';
             this.respostaCorreta = '';
         } else {
             this.mensagemResultado = '✗ Resposta Incorreta!';
-            const altCorreta = this.questaoAtual?.alternativas?.find((alt) => alt.correta);
             this.respostaCorreta = altCorreta
                 ? `${this.getLetraFromOrdem(altCorreta.ordem)} - ${altCorreta.texto}`
                 : 'Não identificada';
+            this.explicacaoCorreta = altCorreta?.explicacao || explicacaoGeral;
         }
 
         registrarResposta({ questaoId: this.questaoAtual.id, acertou: ehCorreta })
@@ -195,6 +218,18 @@ export default class QuestaoEstudo extends LightningElement {
 
     get mostrarRespostaCorreta() {
         return this.mostrarResultado && !this.acertou && !!this.respostaCorreta;
+    }
+
+    get mostrarExplicacaoSelecionada() {
+        return this.mostrarResultado && !!this.explicacaoSelecionada;
+    }
+
+    get mostrarExplicacaoCorreta() {
+        return this.mostrarResultado && !this.acertou && !!this.explicacaoCorreta && this.explicacaoCorreta !== this.explicacaoSelecionada;
+    }
+
+    get tituloExplicacaoSelecionada() {
+        return this.acertou ? 'Por que esta resposta está correta:' : 'Por que sua resposta está incorreta:';
     }
 
     get progressoTexto() {

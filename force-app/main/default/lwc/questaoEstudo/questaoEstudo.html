@@ -13,19 +13,32 @@
             </select>
         </div>
 
-        <!-- Seletor de Tópico -->
+        <!-- Seletor de Tópico (pai) -->
         <div class="selector-section">
             <label>Selecione o Tópico:</label>
             <select onchange={handleTopicoChange} disabled={isLoading}>
                 <option value="">-- Escolha um tópico --</option>
-                <option value="__ALL__">Todos os tópicos</option>
                 <template for:each={topicos} for:item="topico">
                     <option key={topico.id} value={topico.id}>
-                        {topico.name} ({topico.dominio})
+                        {topico.name}
                     </option>
                 </template>
             </select>
         </div>
+
+        <!-- Exibição dos Subtópicos -->
+        <template if:true={temSubtopicos}>
+            <div class="subtopicos-section">
+                <div class="subtopicos-label">Subtópicos a estudar:</div>
+                <div class="subtopicos-container">
+                    <template for:each={subtopicos} for:item="subtopico">
+                        <span key={subtopico.id} class="subtopico-pill">
+                            {subtopico.name}
+                        </span>
+                    </template>
+                </div>
+            </div>
+        </template>
 
         <!-- Exibição da Questão -->
         <template if:true={questaoAtual}>
@@ -61,29 +74,46 @@
 
                 <template if:true={mostrarResultado}>
                     <div class={getResultadoClass}>
-                        <p>{mensagemResultado}</p>
+                        <p class="resultado-titulo">{mensagemResultado}</p>
+
                         <template if:true={mostrarRespostaCorreta}>
-                            <div class="explicacao">
-                                <strong>Resposta correta:</strong> {respostaCorreta}
+                            <div class="explicacao explicacao--correta-label">
+                                <span class="explicacao-icone">✓</span>
+                                <span><strong>Resposta correta:</strong> {respostaCorreta}</span>
                             </div>
                         </template>
-                        <template if:true={questaoAtual.explicacao}>
-                            <div class="explicacao">
-                                <strong>Explicação:</strong> {questaoAtual.explicacao}
+
+                        <template if:true={mostrarExplicacaoSelecionada}>
+                            <div class="explicacao explicacao--motivo">
+                                <span class="explicacao-icone">💡</span>
+                                <div>
+                                    <strong class="explicacao-label">{tituloExplicacaoSelecionada}</strong>
+                                    <p class="explicacao-texto">{explicacaoSelecionada}</p>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template if:true={mostrarExplicacaoCorreta}>
+                            <div class="explicacao explicacao--correta-motivo">
+                                <span class="explicacao-icone">📖</span>
+                                <div>
+                                    <strong class="explicacao-label">Por que a correta está certa:</strong>
+                                    <p class="explicacao-texto">{explicacaoCorreta}</p>
+                                </div>
                             </div>
                         </template>
                     </div>
 
                     <template if:true={proximaRevisaoLabel}>
                         <div class="proxima-revisao">
-                            {proximaRevisaoLabel}
+                            <span class="proxima-revisao-icone">🗓</span> {proximaRevisaoLabel}
                         </div>
                     </template>
 
                     <button 
                         class="btn-proximo" 
                         onclick={handleProxima}>
-                        Próxima Questão
+                        Próxima Questão →
                     </button>
                 </template>
             </div>

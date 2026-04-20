@@ -1,6 +1,7 @@
 import { LightningElement, track } from 'lwc';
 import basePath from '@salesforce/community/basePath';
-import communityLogin from '@salesforce/apex/LightningLoginFormController.login';
+import communityLogin from '@salesforce/apex/LightningLoginFormController.loginLwc';
+import setExperienceId from '@salesforce/apex/LightningLoginFormController.setExperienceId';
 
 export default class DcCommunityLogin extends LightningElement {
     @track disableButton = true;
@@ -10,6 +11,23 @@ export default class DcCommunityLogin extends LightningElement {
     @track password = '';
     @track error = '';
     @track isLoading = false;
+
+    connectedCallback() {
+        this.applyExperienceId();
+    }
+
+    async applyExperienceId() {
+        try {
+            const params = new URL(window.location.href).searchParams;
+            const expId = params.get('expid');
+            if (expId) {
+                await setExperienceId({ expId });
+            }
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error(e);
+        }
+    }
 
     get inputClass() {
         return !this.destaque ? 'custom-input custom-input-error' : 'custom-input';
@@ -51,18 +69,25 @@ export default class DcCommunityLogin extends LightningElement {
             this.isLoading = true;
 
             try {
+                const params = new URL(window.location.href).searchParams;
+                const startUrlParam = params.get('startURL');
+                const startUrl = startUrlParam ? decodeURIComponent(startUrlParam) : '/';
+
                 const result = await communityLogin({
                     username: this.username,
                     password: this.password,
-                    startUrl: null
+                    startUrl
                 });
 
-                if (result && result.includes('https://')) {
+                if (result && (result.startsWith('http://') || result.startsWith('https://') || result.startsWith('/'))) {
                     window.location.href = result;
+                    this.isLoading = false;
+                } else if (result === null || result === undefined || result === '') {
+                    window.location.href = `${basePath}/`;
                     this.isLoading = false;
                 } else {
                     this.destaque = !this.destaque;
-                    this.error = 'Dados incorretos';
+                    this.error = result || 'Dados incorretos';
                     this.isLoading = false;
                 }
             } catch (e) {

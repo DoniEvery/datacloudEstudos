@@ -44,14 +44,6 @@
         <type>Checkbox</type>
     </fields>
     <fields>
-        <fullName>AlternativaCorreta__c</fullName>
-        <defaultValue>false</defaultValue>
-        <externalId>false</externalId>
-        <label>Alternativa Correta</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
-    </fields>
-    <fields>
         <fullName>ExplicacaoAlternativa__c</fullName>
         <externalId>false</externalId>
         <label>Explicação da Alternativa</label>

@@ -1,31 +1,35 @@
 .questao-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 1rem;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .selector-section {
-    margin-bottom: 30px;
-    padding: 15px;
+    margin-bottom: 1rem;
+    padding: 0.875rem;
     background-color: #f5f5f5;
-    border-radius: 6px;
+    border-radius: 0.75rem;
 }
 
 .selector-section label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #333;
 }
 
 .selector-section select {
     width: 100%;
-    padding: 10px;
+    min-height: 3rem;
+    padding: 0.75rem 0.875rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
+    border-radius: 0.625rem;
+    font-size: 1rem;
+    line-height: 1.4;
     cursor: pointer;
+    background-color: #fff;
 }
 
 .selector-section select:disabled {
@@ -33,36 +37,72 @@
     cursor: not-allowed;
 }
 
+.subtopicos-section {
+    margin-bottom: 1rem;
+    padding: 0.875rem;
+    background-color: #f0f9ff;
+    border-radius: 0.75rem;
+    border-left: 4px solid #0ea5e9;
+}
+
+.subtopicos-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0369a1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.subtopicos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.subtopico-pill {
+    display: inline-block;
+    padding: 0.5rem 0.875rem;
+    background-color: #0ea5e9;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .questao-box {
-    background: white;
+    background: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .questao-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 25px;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .questao-header h2 {
     margin: 0;
-    font-size: 20px;
-    line-height: 1.4;
+    font-size: 1.125rem;
+    line-height: 1.5;
     color: #1f2937;
     flex: 1;
 }
 
 .nivel-badge {
     display: inline-block;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
     font-weight: 600;
-    margin-left: 15px;
     white-space: nowrap;
 }
 
@@ -84,19 +124,23 @@
 .alternativas-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 25px;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .alternativa-btn {
     display: flex;
-    align-items: center;
-    padding: 15px;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 3.5rem;
+    padding: 0.875rem;
     border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    background: white;
+    border-radius: 0.875rem;
+    background: #fff;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 0.95rem;
+    line-height: 1.45;
     transition: all 0.3s ease;
     text-align: left;
 }
@@ -124,11 +168,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     background-color: #f3f4f6;
     border-radius: 50%;
-    margin-right: 15px;
     font-weight: 600;
     flex-shrink: 0;
 }
@@ -146,12 +189,15 @@
 .alternativa-btn .texto {
     flex: 1;
     color: #1f2937;
+    min-width: 0;
+    word-break: break-word;
 }
 
 .alternativa-btn .icone {
-    margin-left: 10px;
-    font-size: 20px;
+    align-self: center;
+    font-size: 1.25rem;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
 .alternativa-btn.correta .icone {
@@ -163,9 +209,9 @@
 }
 
 .resultado {
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
+    padding: 0.875rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
     font-weight: 500;
 }
 
@@ -181,44 +227,89 @@
     color: #991b1b;
 }
 
-.resultado p {
-    margin: 0 0 10px 0;
-    font-size: 16px;
+.resultado-titulo {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
 }
 
 .explicacao {
-    background-color: rgba(255, 255, 255, 0.5);
-    padding: 12px;
-    border-radius: 4px;
-    margin-top: 10px;
-    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 0.75rem;
+    border-radius: 0.625rem;
+    margin-top: 0.625rem;
+    font-size: 0.9rem;
     line-height: 1.5;
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.explicacao strong {
+.explicacao-icone {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.explicacao-label {
     display: block;
-    margin-bottom: 5px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-bottom: 0.25rem;
+}
+
+.explicacao-texto {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    font-weight: 400;
+}
+
+.explicacao--correta-label {
+    font-weight: 600;
+    align-items: center;
+}
+
+.explicacao--motivo {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.explicacao--correta-motivo {
+    background-color: rgba(220, 252, 231, 0.6);
 }
 
 .proxima-revisao {
-    margin-bottom: 16px;
-    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 0.875rem;
     background-color: #eff6ff;
     border-left: 4px solid #3b82f6;
-    border-radius: 4px;
-    font-size: 14px;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #1d4ed8;
 }
 
+.proxima-revisao-icone {
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
 .btn-proximo {
     width: 100%;
-    padding: 12px;
+    min-height: 3rem;
+    padding: 0.875rem 1rem;
     background-color: #3b82f6;
-    color: white;
+    color: #fff;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 0.75rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -235,25 +326,69 @@
 
 .progresso {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 1rem;
     color: #666;
-    font-size: 14px;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
 .mensagem-info {
     text-align: center;
-    padding: 40px;
+    padding: 1.5rem 1rem;
     color: #666;
-    font-size: 16px;
+    font-size: 1rem;
     background-color: #f9fafb;
-    border-radius: 6px;
+    border-radius: 0.75rem;
 }
 
 .loading {
     text-align: center;
-    padding: 40px;
+    padding: 1.5rem 1rem;
     color: #3b82f6;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 600;
+}
+
+@media (min-width: 48rem) {
+    .questao-container {
+        padding: 1.5rem;
+    }
+
+    .selector-section {
+        margin-bottom: 1.25rem;
+        padding: 1rem;
+    }
+
+    .questao-box {
+        padding: 1.5rem;
+    }
+
+    .questao-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .questao-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .nivel-badge {
+        margin-left: 1rem;
+    }
+
+    .alternativas-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .alternativa-btn {
+        align-items: center;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .resultado {
+        padding: 1rem;
+    }
 }

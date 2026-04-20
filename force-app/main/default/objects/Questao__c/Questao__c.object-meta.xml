@@ -63,6 +63,16 @@
         <relationshipName>Questoes</relationshipName>
     </fields>
     <fields>
+        <fullName>Subtopico__c</fullName>
+        <externalId>false</externalId>
+        <label>Subtópico</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Enunciado__c</fullName>
         <externalId>false</externalId>
         <label>Enunciado</label>
@@ -152,67 +162,6 @@
         <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
         <visibleLines>8</visibleLines>
-    </fields>
-    <fields>
-        <fullName>JustificativaOficial__c</fullName>
-        <externalId>false</externalId>
-        <label>Justificativa Oficial</label>
-        <length>32768</length>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>5</visibleLines>
-    </fields>
-    <fields>
-        <fullName>Fonte__c</fullName>
-        <externalId>false</externalId>
-        <label>Fonte</label>
-        <length>100</length>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>FonteURL__c</fullName>
-        <externalId>false</externalId>
-        <label>URL da Fonte</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Url</type>
-    </fields>
-    <fields>
-        <fullName>OrigemConteudo__c</fullName>
-        <externalId>false</externalId>
-        <label>Origem do Conteúdo</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Picklist</type>
-        <valueSet>
-            <valueSetDefinition>
-                <sorted>false</sorted>
-                <value>
-                    <fullName>Autoral</fullName>
-                    <default>true</default>
-                    <label>Autoral</label>
-                </value>
-                <value>
-                    <fullName>Adaptado</fullName>
-                    <default>false</default>
-                    <label>Adaptado</label>
-                </value>
-                <value>
-                    <fullName>Resumo</fullName>
-                    <default>false</default>
-                    <label>Resumo</label>
-                </value>
-                <value>
-                    <fullName>Referencia</fullName>
-                    <default>false</default>
-                    <label>Referência</label>
-                </value>
-            </valueSetDefinition>
-        </valueSet>
     </fields>
     <fields>
         <fullName>StatusPublicacao__c</fullName>
