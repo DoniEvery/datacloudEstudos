@@ -1,0 +1,160 @@
+GUIA DE IMPORTAÇÃO DE DADOS - DATA CLOUD ESTUDOS
+================================================
+
+Este guia explica como usar as planilhas CSV para inserir dados no Salesforce Data Cloud Estudos.
+
+## ARQUIVOS FORNECIDOS
+
+1. **questoes_template.csv** - Template para criar Questões (Questao__c)
+2. **alternativas_template.csv** - Template para criar Alternativas (AlternativaQuestao__c)
+3. **README.txt** - Este arquivo
+
+## PASSO A PASSO
+
+### 1. PREPARAR OS IDs DAS ENTIDADES PAI
+
+Antes de usar as planilhas, você precisa dos IDs de:
+- **Certificacao__c** - Ex: "0010Y00000Abc123QAA"
+- **DominioCertificacao__c** - Ex: "a000Y00000XyzQQQQAA"
+- **Topico__c** - Ex: "a010Y00000AbcQQQQAA"
+
+Para encontrá-los:
+- Abra a Certificação no Salesforce
+- Copie o ID da URL (primeiros 18 caracteres após .com/)
+- Faça o mesmo para Domínio e Tópico
+
+### 2. PREENCHER questoes_template.csv
+
+Campos a preencher:
+- **Name**: Texto descritivo da questão (ex: "Simulado - SM001")
+- **Enunciado__c**: O texto da pergunta completa
+- **Certificacao__c**: [Substitua pelo ID real]
+- **DominioPrincipal__c**: [Substitua pelo ID real]
+- **TopicoPrincipal__c**: [Substitua pelo ID real]
+- **TipoQuestao__c**: "Simulado" ou "Estudo" (fixo)
+- **NivelDificuldade__c**: "Facil", "Dificil", "MuitoDificil"
+- **ColecaoSimulado__c**: Nome da coleção (ex: "Fundamentos Data Cloud")
+- **NivelSimulado__c**: 1, 2 ou 3
+- **OrigemSimulado__c**: Origem dos dados (ex: "Oficial (Fundamentos)")
+- **CodigoQuestao__c**: Código único (ex: "SM001", "S2P001")
+- **CodigoInterno__c**: Código interno (pode ser igual ao anterior)
+- **Subtopico__c**: Categoria (ex: "Simulado Fácil")
+
+Exemplo preenchido:
+```
+Name,Enunciado__c,...
+"Simulado - SM001","O que é um Data Stream no contexto do Data Cloud?","0010Y00000Abc123QAA",...
+```
+
+### 3. PREENCHER alternativas_template.csv
+
+Campos a preencher:
+- **Questao__c**: [ID da questão já criada]
+- **OrdemExibicao__c**: 1, 2, 3 ou 4 (ordem das alternativas)
+- **Name**: Texto da alternativa (máx 80 caracteres)
+- **Correta__c**: "true" ou "false"
+- **Ativa__c**: "true" ou "false" (sempre true)
+- **ExplicacaoAlternativa__c**: Justificativa ou explicação
+
+Exemplo preenchido:
+```
+Questao__c,OrdemExibicao__c,Name,Correta__c,Ativa__c,...
+"a020Y00000AbcQQQQQA",1,"Configuração que define origem, schema e frequência de ingestão",true,true,"Um Data Stream é..."
+```
+
+### 4. IMPORTAR NO SALESFORCE
+
+**Via Data Import (Recomendado para grande volume):**
+1. Vá para Setup > Data Management > Data Import Wizard
+2. Selecione o objeto (Questao__c ou AlternativaQuestao__c)
+3. Escolha "Insert new records"
+4. Faça upload do CSV
+5. Mapeie os campos
+6. Revise e confirme
+
+**Via API (Para usuários avançados):**
+Usar Salesforce CLI ou ferramentas como Salesforce DX:
+```
+sf data upsert --sobject Questao__c --external-id CodigoQuestao__c --file questoes_template.csv --target-org DATACLOUDestudos
+```
+
+## ESTRUTURA DE DADOS
+
+### Certificacao__c
+- Name: Nome da certificação
+- Exemplo: "Salesforce Data 360 Consultant"
+
+### DominioCertificacao__c
+- Name: Nome do domínio
+- Certificacao__c: Lookup para Certificacao__c
+- Exemplo: "Setup and Administration", "Data Ingestion"
+
+### Topico__c
+- Name: Nome do tópico/subtema
+- DominioCertificacao__c: Lookup para DominioCertificacao__c
+- Exemplo: "Permissões", "Conectores"
+
+### Questao__c
+- Name: Código + descrição
+- Enunciado__c: Texto da pergunta
+- TipoQuestao__c: "Simulado" ou "Estudo"
+- NivelDificuldade__c: "Facil", "Dificil", "MuitoDificil"
+- ColecaoSimulado__c: Agrupa simulados por coleção
+- NivelSimulado__c: 1, 2, 3
+- OrigemSimulado__c: Fonte do conteúdo
+- CodigoQuestao__c: Identificador único
+- Certificacao__c: Lookup
+- DominioPrincipal__c: Lookup
+- TopicoPrincipal__c: Lookup
+
+### AlternativaQuestao__c
+- Name: Texto da alternativa
+- Questao__c: Lookup para Questao__c
+- OrdemExibicao__c: 1-4
+- Correta__c: Boolean
+- ExplicacaoAlternativa__c: Texto explicativo
+- Ativa__c: Boolean (sempre true)
+
+## REGRAS IMPORTANTES
+
+1. **Alternativas por questão**: Exatamente 4 (A, B, C, D)
+2. **Resposta correta**: Exatamente 1 por questão
+3. **Textos únicos**: Não use alternativas duplicadas na mesma questão
+4. **Enunciados**: Devem ser claros e não tendenciosos
+5. **Explicações**: Parágrafos de 2-3 frases, didáticas
+6. **Códigos**: Use prefixos únicos (SM001, S2P001, etc.)
+
+## VALIDAÇÃO
+
+Após importar, validar:
+1. Contar total de questões vs esperado
+2. Verificar se cada questão tem exatamente 4 alternativas
+3. Verificar se cada questão tem exatamente 1 resposta correta
+4. Testar a navegação no LWC questaoEstudo
+5. Verificar embaralhamento de alternativas
+
+## TROUBLESHOOTING
+
+**Erro: "Required field missing"**
+- Preencha todos os campos obrigatórios em maiúscula/conforme schema
+
+**Erro: "Invalid lookup value"**
+- Verifique se o ID de Certificacao__c, DominioPrincipal__c, TopicoPrincipal__c existem e estão corretos
+
+**Erro: "Duplicate external ID value"**
+- Garanta que CodigoQuestao__c é único por certificação
+
+**CSV não importa**
+- Valide encoding UTF-8 no Excel (Salvar Como > CSV UTF-8)
+- Confirme quebras de linha corretas (LF, não CRLF)
+
+## SCRIPTS APEX AUTOMÁTICOS (Alternativa)
+
+Se preferir, também fornecemos scripts Apex que:
+1. Geram dados de forma programática
+2. Garantem validação automática
+3. Executam em segundos
+
+Exemplo: `scripts/apex/seed_simulado_60.apex`
+
+Contato: [seu-email]

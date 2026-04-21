@@ -1,0 +1,72 @@
+<template>
+    <lightning-card title="Criar Questão + Alternativas" icon-name="standard:scan_card">
+        <div class="slds-p-around_small">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-combobox label="Certificação" value={certificacaoId} options={certificacoes}
+                        onchange={handleCertificacaoChange} required></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-combobox label="Domínio" value={dominioId} options={dominios}
+                        onchange={handleDominioChange} required></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-combobox label="Tópico" value={topicoId} options={topicos} onchange={handleTopicoChange}
+                        required></lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12">
+                    <lightning-combobox label="Tipo de Questão" value={tipoQuestao} options={tipoOptions}
+                        onchange={handleTipoChange} required></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12">
+                    <lightning-combobox label="Nível de Dificuldade" value={nivelDificuldade}
+                        options={dificuldadeOptions} onchange={handleDificuldadeChange} required></lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-input label="Nome da Questão" value={nome} onchange={handleNomeChange}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-textarea label="Enunciado" value={enunciado} onchange={handleEnunciadoChange}
+                        required></lightning-textarea>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-combobox label="Coleção" value={colecaoSimulado} options={colecoesSimulado}
+                        onchange={handleColecaoChange}></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-input type="number" label="Nível Simulado" value={nivelSimulado}
+                        onchange={handleNivelSimuladoChange}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                    <lightning-input label="Origem" value={origemSimulado}
+                        onchange={handleOrigemChange}></lightning-input>
+                </div>
+            </div>
+
+            <h3 class="slds-section__title slds-m-top_medium">Alternativas</h3>
+            <template for:each={alternativaView} for:item="alt">
+                <div key={alt.idx} class="slds-box slds-m-bottom_small slds-theme_shade">
+                    <div class="slds-grid slds-vertical-align-center">
+                        <input type="radio" name="correta" data-index={alt.idx} checked={alt.checked}
+                            onchange={handleRadioChange} class="slds-m-right_small" />
+                        <div class="slds-col">
+                            <lightning-textarea label="Texto da Alternativa" value={alt.texto} data-index={alt.idx}
+                                onchange={handleAlternativaTextoChange} required></lightning-textarea>
+                            <lightning-textarea label="Explicação (Opcional)" value={alt.explicacao}
+                                data-index={alt.idx} onchange={handleAlternativaExplicacaoChange}></lightning-textarea>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="slds-p-around_small slds-border_top">
+            <lightning-button variant="brand" label="Salvar Questão" onclick={handleSalvar} disabled={isSaving}
+                class="slds-m-right_small"></lightning-button>
+            <lightning-button label="Limpar" onclick={resetForm} disabled={isSaving}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

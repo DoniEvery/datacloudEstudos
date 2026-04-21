@@ -1,0 +1,117 @@
+PASSOS RÁPIDOS PARA USAR OS ARQUIVOS CSV
+========================================
+
+## 1. ENCONTRAR OS IDS NECESSÁRIOS
+
+Abra o Salesforce no browser e navegue até:
+- Certificação "Salesforce Data 360 Consultant"
+- Copie o ID da URL (18 caracteres após .com/)
+- Faça anotação como [CERT_ID]
+
+Exemplo de URL:
+https://datacloudestudos.lightning.force.com/lightning/r/Certificacao__c/0010Y00000Abc123QAA/view
+                                                                             ^^^^^^^^^^^^^^^^^^
+                                                                             COPIE ISTO
+
+## 2. PREENCHIMENTO DOS PLACEHOLDERS
+
+Nos arquivos CSV, substitua:
+- [CERT_ID] → ID real da certificação
+- [DOMINIO_ID] → ID real do domínio
+- [TOPICO_ID] → ID real do tópico
+- [QUESTAO_SM001_ID] → ID da questão (só aparece APÓS criar)
+
+## 3. FLUXO DE CRIAÇÃO
+
+### Opção A: Criar questões ANTES das alternativas
+
+1. Abra questoes_exemplo_preenchido.csv
+2. Substitua [CERT_ID], [DOMINIO_ID], [TOPICO_ID] pelos IDs reais
+3. Salve como UTF-8
+4. Importe via Data Import Wizard (Questao__c)
+5. Após importar, copie os IDs das questões criadas
+6. Abra alternativas_exemplo_preenchido.csv
+7. Substitua [QUESTAO_SM001_ID], etc. pelos IDs reais
+8. Importe via Data Import Wizard (AlternativaQuestao__c)
+
+### Opção B: Importação automática com script
+
+Use os scripts Apex que já criamos:
+```
+sf apex run --file scripts/apex/seed_simulado_60.apex --target-org DATACLOUDestudos
+```
+
+## 4. VALIDAÇÃO APÓS IMPORTAÇÃO
+
+Teste no app questaoEstudo:
+1. Selecione certificação
+2. Escolha modo "Simulado"
+3. Verifique se a coleção aparece
+4. Clique em "Iniciar Simulado"
+5. Confirme que:
+   - São 60 questões
+   - Cada uma tem 4 alternativas
+   - Alternativas se embaralham
+   - Uma é sempre correta
+
+## 5. ESTRUTURA DO CSV
+
+### questoes_template.csv
+Cada linha = 1 Questão
+Campos requeridos:
+- Name (texto descritivo)
+- Enunciado__c (pergunta)
+- Certificacao__c (ID)
+- DominioPrincipal__c (ID)
+- TopicoPrincipal__c (ID)
+- TipoQuestao__c (sempre "Simulado" ou "Estudo")
+- NivelDificuldade__c (Facil, Dificil, MuitoDificil)
+- ColecaoSimulado__c (ex: "Fundamentos Data Cloud")
+- NivelSimulado__c (1, 2, 3)
+- OrigemSimulado__c (ex: "Oficial (Fundamentos)")
+- CodigoQuestao__c (SM001, S2P001, etc.)
+- CodigoInterno__c (código interno, pode ser igual CodigoQuestao__c)
+- Subtopico__c (categoria)
+
+### alternativas_template.csv
+Cada linha = 1 Alternativa
+Campos requeridos:
+- Questao__c (ID da questão pai)
+- OrdemExibicao__c (1, 2, 3, 4)
+- Name (texto da alternativa, máx 80 chars)
+- Correta__c (true ou false)
+- Ativa__c (sempre true)
+- ExplicacaoAlternativa__c (explicação didática)
+
+## 6. EXEMPLO PRÁTICO PREENCHIDO
+
+Arquivo: questoes_exemplo_preenchido.csv
+Arquivo: alternativas_exemplo_preenchido.csv
+
+Estes files já têm os dados de SM001 a SM010 prontos.
+Basta substituir os IDs.
+
+## 7. TROUBLESHOOTING
+
+### CSV não aparece nos valores
+- Certifique-se que não tem espaços em branco antes/depois dos valores
+- Encoding correto: UTF-8 (não ANSI)
+- Quebra de linha: LF (não CRLF do Windows)
+
+### Erro ao importar no Salesforce
+- Valide que IDs existem e têm 18 caracteres
+- Confirme que lookup IDs são do objeto correto
+- Verifique permissões de criação (seu usuário precisa de acesso)
+
+### Alternativas não aparecem
+- Confirme que cada questão tem exatamente 4 alternativas
+- Confirme que exatamente 1 é correta (Correta__c = true)
+- Confirme que todas têm Ativa__c = true
+
+## 8. CONTATO E AJUDA
+
+Se tiver dúvidas:
+- Consulte GUIA_IMPORTACAO.txt para documentação completa
+- Revise os scripts Apex em scripts/apex/ para ver como geração de dados é feita
+- Verifique os schemas em force-app/main/default/objects/
+

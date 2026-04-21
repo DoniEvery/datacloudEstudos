@@ -12,7 +12,9 @@
         <type>Text</type>
     </nameField>
     <pluralLabel>Questões</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts>
+        <listViewButtons>Criar_Questao_Com_Alternativas</listViewButtons>
+    </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
     <fields>

@@ -1,0 +1,11 @@
+Name,Enunciado__c,Certificacao__c,DominioPrincipal__c,TopicoPrincipal__c,TipoQuestao__c,NivelDificuldade__c,ColecaoSimulado__c,NivelSimulado__c,OrigemSimulado__c,CodigoQuestao__c,CodigoInterno__c,Subtopico__c
+"Simulado - SM001","O que é um Data Stream no contexto do Data Cloud?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM001","SM001","Simulado Fácil"
+"Simulado - SM002","Qual é a principal função de um DLO (Data Lake Object)?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM002","SM002","Simulado Fácil"
+"Simulado - SM003","O que significa DMO no Data Cloud?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM003","SM003","Simulado Fácil"
+"Simulado - SM004","Qual objeto unifica dados de múltiplas fontes?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM004","SM004","Simulado Fácil"
+"Simulado - SM005","Que tipo de dado é armazenado em um Calculated Insight?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM005","SM005","Simulado Fácil"
+"Simulado - SM006","Qual é a função de um Contact Point no Data Cloud?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM006","SM006","Simulado Fácil"
+"Simulado - SM007","O que representa uma Calculated Insight?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM007","SM007","Simulado Fácil"
+"Simulado - SM008","Como o Data Cloud garante a qualidade de dados?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM008","SM008","Simulado Fácil"
+"Simulado - SM009","Qual é o objetivo principal da Harmonização?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM009","SM009","Simulado Fácil"
+"Simulado - SM010","O que significa consentimento no contexto do Data Cloud?","[CERT_ID]","[DOMINIO_ID]","[TOPICO_ID]","Simulado","Facil","Fundamentos Data Cloud",1,"Oficial (Fundamentos)","SM010","SM010","Simulado Fácil"
