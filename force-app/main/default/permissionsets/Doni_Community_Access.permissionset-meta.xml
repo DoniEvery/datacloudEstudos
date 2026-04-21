@@ -24,6 +24,21 @@
         <field>Questao__c.CodigoQuestao__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Questao__c.ColecaoSimulado__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Questao__c.NivelSimulado__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Questao__c.OrigemSimulado__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
 
     <!-- Certificacao__c — somente leitura -->
     <objectPermissions>

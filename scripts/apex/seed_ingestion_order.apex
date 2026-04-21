@@ -109,6 +109,7 @@ Map<String, Questao__c> qByEnunciado = new Map<String, Questao__c>();
 
 List<String> qLoadFields = new List<String>{ 'Id', 'Name' };
 if (hasCodigo) qLoadFields.add('CodigoInterno__c');
+if (hasCodigoQuestao) qLoadFields.add('CodigoQuestao__c');
 if (hasEnunciado) qLoadFields.add('Enunciado__c');
 String qLoadSoql = 'SELECT ' + String.join(qLoadFields, ', ')
     + ' FROM Questao__c WHERE Certificacao__c = :certId';
@@ -116,6 +117,8 @@ for (SObject sob : Database.query(qLoadSoql)) {
     Questao__c q = (Questao__c) sob;
     if (hasCodigo && !String.isBlank((String) q.get('CodigoInterno__c'))) {
         qByCodigo.put((String) q.get('CodigoInterno__c'), q);
+    } else if (hasCodigoQuestao && !String.isBlank((String) q.get('CodigoQuestao__c'))) {
+        qByCodigo.put((String) q.get('CodigoQuestao__c'), q);
     }
     if (hasEnunciado && !String.isBlank((String) q.get('Enunciado__c'))) {
         qByEnunciado.put((String) q.get('Enunciado__c'), q);
@@ -155,6 +158,7 @@ for (List<String> row : qData) {
             NivelDificuldade__c = 'Media'
         );
         if (hasCodigo) nova.put('CodigoInterno__c', code);
+        if (hasCodigoQuestao) nova.put('CodigoQuestao__c', code);
         if (hasEnunciado) nova.put('Enunciado__c', enunciado);
         if (hasSubtopico) nova.put('Subtopico__c', sub);
         qIns.add(nova);
@@ -162,6 +166,7 @@ for (List<String> row : qData) {
         Boolean changed = false;
         if (existing.Name != nomeQuestao) { existing.Name = nomeQuestao; changed = true; }
         if (hasCodigo && (String) existing.get('CodigoInterno__c') != code) { existing.put('CodigoInterno__c', code); changed = true; }
+        if (hasCodigoQuestao && (String) existing.get('CodigoQuestao__c') != code) { existing.put('CodigoQuestao__c', code); changed = true; }
         if (hasEnunciado) { existing.put('Enunciado__c', enunciado); changed = true; }
         if (hasSubtopico) { existing.put('Subtopico__c', sub); changed = true; }
         if (changed) qUpd.add(existing);
@@ -177,6 +182,7 @@ qByEnunciado.clear();
 for (SObject sob : Database.query(qLoadSoql)) {
     Questao__c q = (Questao__c) sob;
     if (hasCodigo && !String.isBlank((String) q.get('CodigoInterno__c'))) qByCodigo.put((String) q.get('CodigoInterno__c'), q);
+    else if (hasCodigoQuestao && !String.isBlank((String) q.get('CodigoQuestao__c'))) qByCodigo.put((String) q.get('CodigoQuestao__c'), q);
     if (hasEnunciado && !String.isBlank((String) q.get('Enunciado__c'))) qByEnunciado.put((String) q.get('Enunciado__c'), q);
 }
 

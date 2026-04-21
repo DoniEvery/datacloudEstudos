@@ -58,6 +58,23 @@ public without sharing class QuestaoEstudoController {
         return value == null ? null : String.valueOf(value);
     }
 
+    private static Decimal getDecimalValue(SObject record, String fieldName) {
+        if (String.isBlank(fieldName)) {
+            return null;
+        }
+        Object value = record.get(fieldName);
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Decimal) {
+            return (Decimal) value;
+        }
+        if (value instanceof Integer) {
+            return Decimal.valueOf((Integer) value);
+        }
+        return null;
+    }
+
     private static String limparPrefixoQuestao(String texto) {
         if (String.isBlank(texto)) {
             return texto;
@@ -66,6 +83,54 @@ public without sharing class QuestaoEstudoController {
         // Remove padrões como: Q005 - , WQ021 - , ABC123 -
         String limpo = texto.replaceFirst('^[A-Za-z]{1,3}\\d{3}\\s*-\\s*', '');
         return limpo;
+    }
+
+    private static String normalizarTextoAlternativa(String texto) {
+        if (String.isBlank(texto)) {
+            return '';
+        }
+        return texto.trim().toLowerCase().replaceAll('\\s+', ' ');
+    }
+
+    private static List<Map<String, Object>> removerAlternativasDuplicadas(List<Map<String, Object>> alternativas) {
+        List<Map<String, Object>> unicas = new List<Map<String, Object>>();
+        if (alternativas == null || alternativas.isEmpty()) {
+            return unicas;
+        }
+
+        Set<String> textosVistos = new Set<String>();
+        Integer ordem = 1;
+        for (Map<String, Object> alt : alternativas) {
+            String texto = String.valueOf(alt.get('texto'));
+            String chave = normalizarTextoAlternativa(texto);
+            if (String.isBlank(chave) || textosVistos.contains(chave)) {
+                continue;
+            }
+            textosVistos.add(chave);
+
+            Map<String, Object> copia = new Map<String, Object>(alt);
+            copia.put('ordem', ordem++);
+            unicas.add(copia);
+        }
+
+        return unicas;
+    }
+
+    private static Boolean alternativasValidas(List<Map<String, Object>> alternativas) {
+        if (alternativas == null || alternativas.size() < 4) {
+            return false;
+        }
+
+        Integer totalCorretas = 0;
+        for (Map<String, Object> alt : alternativas) {
+            Object corretaRaw = alt.get('correta');
+            Boolean correta = corretaRaw != null && (Boolean) corretaRaw;
+            if (correta) {
+                totalCorretas++;
+            }
+        }
+
+        return totalCorretas == 1;
     }
     
     private static List<SObject> ordenarQuestoesPorRevisao(List<SObject> questoes) {
@@ -112,8 +177,9 @@ public without sharing class QuestaoEstudoController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getQuestoes(Id topicoId, Id dominioId, Id certificacaoId, Boolean incluirTodosTopicos) {
+    public static List<Map<String, Object>> getQuestoes(Id topicoId, Id dominioId, Id certificacaoId, Boolean incluirTodosTopicos, String modoEstudo, String colecaoSimulado) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
+        Boolean isSimulado = String.valueOf(modoEstudo) == 'SIMULADO';
 
         Map<String, Schema.SObjectField> questaoFields = Schema.SObjectType.Questao__c.fields.getMap();
         String qTextoField = pickField(questaoFields, new List<String>{ 'Enunciado__c', 'TextoQuestao__c', 'Pergunta__c', 'Name' });
@@ -122,12 +188,19 @@ public without sharing class QuestaoEstudoController {
         String qExplicacaoField = pickField(questaoFields, new List<String>{ 'ExplicacaoResposta__c', 'Explicacao__c' });
         String qAtivaField = pickField(questaoFields, new List<String>{ 'Ativa__c', 'Ativo__c' });
 
+        String qColecaoSimuladoField = pickField(questaoFields, new List<String>{ 'ColecaoSimulado__c' });
+        String qNivelSimuladoField = pickField(questaoFields, new List<String>{ 'NivelSimulado__c' });
+        String qOrigemSimuladoField = pickField(questaoFields, new List<String>{ 'OrigemSimulado__c' });
+
         List<String> qSelectFields = new List<String>{ 'Id', 'Name' };
         if (!String.isBlank(qTextoField) && !qSelectFields.contains(qTextoField)) qSelectFields.add(qTextoField);
         if (!String.isBlank(qNivelField) && !qSelectFields.contains(qNivelField)) qSelectFields.add(qNivelField);
         if (!String.isBlank(qSubtopicoField) && !qSelectFields.contains(qSubtopicoField)) qSelectFields.add(qSubtopicoField);
         if (!String.isBlank(qExplicacaoField) && !qSelectFields.contains(qExplicacaoField)) qSelectFields.add(qExplicacaoField);
         if (!String.isBlank(qAtivaField) && !qSelectFields.contains(qAtivaField)) qSelectFields.add(qAtivaField);
+        if (!String.isBlank(qColecaoSimuladoField) && !qSelectFields.contains(qColecaoSimuladoField)) qSelectFields.add(qColecaoSimuladoField);
+        if (!String.isBlank(qNivelSimuladoField) && !qSelectFields.contains(qNivelSimuladoField)) qSelectFields.add(qNivelSimuladoField);
+        if (!String.isBlank(qOrigemSimuladoField) && !qSelectFields.contains(qOrigemSimuladoField)) qSelectFields.add(qOrigemSimuladoField);
 
         Set<Id> topicoIds = new Set<Id>();
         if (Boolean.valueOf(incluirTodosTopicos)) {
@@ -164,9 +237,29 @@ public without sharing class QuestaoEstudoController {
 
         String qSoql = 'SELECT ' + String.join(qSelectFields, ', ')
             + ' FROM Questao__c WHERE TopicoPrincipal__c IN :topicoIds';
+
+        if (isSimulado) {
+            qSoql += ' AND TipoQuestao__c = \'Simulado\'';
+            if (certificacaoId != null) {
+                qSoql += ' AND Certificacao__c = :certificacaoId';
+            }
+            if (!String.isBlank(colecaoSimulado) && !String.isBlank(qColecaoSimuladoField)) {
+                qSoql += ' AND ' + qColecaoSimuladoField + ' = :colecaoSimulado';
+            }
+        } else {
+            qSoql += ' AND TipoQuestao__c != \'Simulado\'';
+        }
+
         qSoql += ' ORDER BY CreatedDate ASC';
 
-        List<SObject> questoes = ordenarQuestoesPorRevisao(Database.query(qSoql));
+        if (isSimulado) {
+            qSoql += ' LIMIT 60';
+        }
+
+        List<SObject> questoes = Database.query(qSoql);
+        if (!isSimulado) {
+            questoes = ordenarQuestoesPorRevisao(questoes);
+        }
 
         Map<String, Schema.SObjectField> alternativaFields = Schema.SObjectType.AlternativaQuestao__c.fields.getMap();
         String aTextoField = pickField(alternativaFields, new List<String>{ 'TextoAlternativa__c', 'Texto__c', 'Descricao__c', 'Name' });
@@ -227,6 +320,15 @@ public without sharing class QuestaoEstudoController {
         for (SObject q : questoes) {
             Map<String, Object> qMap = new Map<String, Object>();
             Id qId = (Id) q.get('Id');
+
+            List<Map<String, Object>> alternativas = alternativasPorQuestao.containsKey(qId)
+                ? alternativasPorQuestao.get(qId)
+                : new List<Map<String, Object>>();
+            alternativas = removerAlternativasDuplicadas(alternativas);
+            if (!alternativasValidas(alternativas)) {
+                continue;
+            }
+
             qMap.put('id', qId);
 
             String enunciado = getStringValue(q, qTextoField);
@@ -238,8 +340,66 @@ public without sharing class QuestaoEstudoController {
             qMap.put('nivel', getStringValue(q, qNivelField));
             qMap.put('subtopico', getStringValue(q, qSubtopicoField));
             qMap.put('explicacao', getStringValue(q, qExplicacaoField));
-            qMap.put('alternativas', alternativasPorQuestao.containsKey(qId) ? alternativasPorQuestao.get(qId) : new List<Map<String, Object>>());
+            qMap.put('colecaoSimulado', getStringValue(q, qColecaoSimuladoField));
+            qMap.put('nivelSimulado', getDecimalValue(q, qNivelSimuladoField));
+            qMap.put('origemSimulado', getStringValue(q, qOrigemSimuladoField));
+            qMap.put('alternativas', alternativas);
             result.add(qMap);
+        }
+
+        return result;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getSimuladosDisponiveis(Id certificacaoId) {
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        if (certificacaoId == null) {
+            return result;
+        }
+
+        Map<String, Schema.SObjectField> questaoFields = Schema.SObjectType.Questao__c.fields.getMap();
+        String qColecaoSimuladoField = pickField(questaoFields, new List<String>{ 'ColecaoSimulado__c' });
+        String qNivelSimuladoField = pickField(questaoFields, new List<String>{ 'NivelSimulado__c' });
+        String qOrigemSimuladoField = pickField(questaoFields, new List<String>{ 'OrigemSimulado__c' });
+
+        if (String.isBlank(qColecaoSimuladoField)) {
+            return result;
+        }
+
+        List<String> qFields = new List<String>{ 'Id', qColecaoSimuladoField };
+        if (!String.isBlank(qNivelSimuladoField)) qFields.add(qNivelSimuladoField);
+        if (!String.isBlank(qOrigemSimuladoField)) qFields.add(qOrigemSimuladoField);
+
+        String soql = 'SELECT ' + String.join(qFields, ', ')
+            + ' FROM Questao__c WHERE Certificacao__c = :certificacaoId AND TipoQuestao__c = \'Simulado\''
+            + ' ORDER BY CreatedDate ASC';
+
+        Set<String> chavesVistas = new Set<String>();
+        for (SObject q : Database.query(soql)) {
+            String colecao = getStringValue(q, qColecaoSimuladoField);
+            if (String.isBlank(colecao) || chavesVistas.contains(colecao)) {
+                continue;
+            }
+            chavesVistas.add(colecao);
+
+            Decimal nivel = getDecimalValue(q, qNivelSimuladoField);
+            String origem = getStringValue(q, qOrigemSimuladoField);
+
+            String label = colecao;
+            if (nivel != null) {
+                label += ' · Nível ' + String.valueOf(nivel.intValue());
+            }
+            if (!String.isBlank(origem)) {
+                label += ' · ' + origem;
+            }
+
+            result.add(new Map<String, Object>{
+                'id' => colecao,
+                'name' => label,
+                'colecao' => colecao,
+                'nivel' => nivel,
+                'origem' => origem
+            });
         }
 
         return result;

@@ -13,36 +13,75 @@
             </select>
         </div>
 
-        <!-- Seletor de Tópico (pai) -->
-        <div class="selector-section">
-            <label>Selecione o Tópico:</label>
-            <select onchange={handleTopicoChange} disabled={isLoading}>
-                <option value="">-- Escolha um tópico --</option>
-                <template for:each={topicos} for:item="topico">
-                    <option key={topico.id} value={topico.id}>
-                        {topico.name}
-                    </option>
-                </template>
-            </select>
-        </div>
-
-        <!-- Exibição dos Subtópicos -->
-        <template if:true={temSubtopicos}>
-            <div class="subtopicos-section">
-                <div class="subtopicos-label">Subtópicos a estudar:</div>
-                <div class="subtopicos-container">
-                    <template for:each={subtopicos} for:item="subtopico">
-                        <span key={subtopico.id} class="subtopico-pill">
-                            {subtopico.name}
-                        </span>
+        <template if:true={mostrarSeletorModo}>
+            <div class="selector-section">
+                <label>Modo de Estudo:</label>
+                <select onchange={handleModoChange} disabled={isLoading}>
+                    <option value="" selected={modoNaoSelecionado}>-- Escolha um modo --</option>
+                    <template for:each={modosEstudo} for:item="modo">
+                        <option key={modo.value} value={modo.value} selected={modo.selected}>
+                            {modo.label}
+                        </option>
                     </template>
-                </div>
+                </select>
+            </div>
+        </template>
+
+        <!-- Seletor de Tópico (pai) -->
+        <template if:true={ehModoLivre}>
+            <div class="selector-section">
+                <label>Selecione o Tópico:</label>
+                <select onchange={handleTopicoChange} disabled={isLoading}>
+                    <option value="">-- Escolha um tópico --</option>
+                    <template for:each={topicos} for:item="topico">
+                        <option key={topico.id} value={topico.id}>
+                            {topico.name}
+                        </option>
+                    </template>
+                </select>
+            </div>
+        </template>
+
+        <template if:true={mostrarSeletorSimulado}>
+            <div class="selector-section selector-section--simulado">
+                <label>Escolha o Simulado:</label>
+                <select onchange={handleSimuladoChange} disabled={isLoading}>
+                    <option value="" selected={semSimuladoSelecionado}>-- Escolha um simulado --</option>
+                    <template for:each={simuladosRenderizados} for:item="simulado">
+                        <option key={simulado.id} value={simulado.id} selected={simulado.selected}>
+                            {simulado.name}
+                        </option>
+                    </template>
+                </select>
+
+                <button class="btn-iniciar" onclick={handleIniciarEstudo} disabled={botaoIniciarDesabilitado}>Iniciar Simulado</button>
+            </div>
+        </template>
+
+        <template if:true={ehModoLivre}>
+            <div class="selector-section selector-section--simulado">
+                <button class="btn-iniciar" onclick={handleIniciarEstudo} disabled={botaoIniciarDesabilitado}>Iniciar Estudo Livre</button>
             </div>
         </template>
 
         <!-- Exibição da Questão -->
-        <template if:true={questaoAtual}>
+        <template if:true={mostrarQuestaoAtual}>
             <div class="questao-box">
+                <template if:true={ehModoSimulado}>
+                    <div class="simulado-header">
+                        <span class="simulado-badge">Modo Simulado</span>
+                        <span class="timer-badge">⏱ {tempoRestanteFormatado}</span>
+                    </div>
+
+                    <div class="progresso-simulado-card">
+                        <div class="progresso-simulado-topo">
+                            <span>Respondidas: {questoesRespondidasCount}/{totalQuestoes}</span>
+                            <span>{percentualProgressoSimulado}% concluído</span>
+                        </div>
+                        <lightning-progress-bar value={percentualProgressoSimulado} size="medium"></lightning-progress-bar>
+                    </div>
+                </template>
+
                 <div class="questao-header">
                     <h2>{questaoAtual.enunciado}</h2>
                     <span class="nivel-badge" data-nivel={questaoAtual.nivel}>
@@ -59,7 +98,7 @@
                             data-id={alt.id}
                             data-correta={alt.correta}
                             data-ordem={alt.ordem}
-                            disabled={mostrarResultado}>
+                            disabled={alternativasBloqueadas}>
                             <span class="letra">{alt.letra}</span>
                             <span class="texto">{alt.texto}</span>
                             <template if:true={mostrarResultado}>
@@ -113,7 +152,15 @@
                     <button 
                         class="btn-proximo" 
                         onclick={handleProxima}>
-                        Próxima Questão →
+                        {textoBotaoProximo}
+                    </button>
+                </template>
+
+                <template if:true={ehModoSimulado}>
+                    <button 
+                        class="btn-proximo" 
+                        onclick={handleProxima}>
+                        {textoBotaoProximo}
                     </button>
                 </template>
             </div>
@@ -123,10 +170,71 @@
             </div>
         </template>
 
+        <template if:true={mostrarResumoSimulado}>
+            <div class="questao-box resumo-simulado">
+                <h2>Resultado Final do Simulado</h2>
+                <p class="resultado-final-msg">{mensagemResultado}</p>
+                <div class="resumo-grid">
+                    <div class="resumo-item">
+                        <span class="resumo-label">Questões</span>
+                        <strong>{totalQuestoes}</strong>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Acertos</span>
+                        <strong>{acertosSimulado}</strong>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Erros</span>
+                        <strong>{errosSimulado}</strong>
+                    </div>
+                    <div class="resumo-item">
+                        <span class="resumo-label">Aproveitamento</span>
+                        <strong>{percentualSimulado}%</strong>
+                    </div>
+                </div>
+
+                <div class="revisao-final-section">
+                    <h3>Revisão Final das Questões</h3>
+                    <div class="revisao-final-lista">
+                        <template for:each={revisaoSimulado} for:item="item">
+                            <article key={item.id} class="revisao-item">
+                                <div class="revisao-item-topo">
+                                    <strong>Questão {item.numero}</strong>
+                                    <span class="revisao-status" data-status={item.statusClasse}>{item.statusLabel}</span>
+                                </div>
+
+                                <p class="revisao-enunciado">{item.enunciado}</p>
+
+                                <div class="revisao-respostas">
+                                    <p><strong>Sua resposta:</strong> {item.respostaUsuario}</p>
+                                    <p><strong>Resposta correta:</strong> {item.respostaCorreta}</p>
+                                </div>
+
+                                <template if:true={item.explicacaoCorreta}>
+                                    <div class="revisao-explicacao">
+                                        <strong>Explicação:</strong>
+                                        <p>{item.explicacaoCorreta}</p>
+                                    </div>
+                                </template>
+                            </article>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         <!-- Mensagem quando nenhum tópico selecionado -->
-        <template if:false={questaoAtual}>
+        <template if:false={mostrarQuestaoOuResumo}>
             <div class="mensagem-info">
-                Selecione um tópico para começar a estudar.
+                <template if:true={modoNaoSelecionado}>
+                    Selecione um modo de estudo para continuar.
+                </template>
+                <template if:true={ehModoLivre}>
+                    Selecione um tópico e clique em Iniciar Estudo Livre.
+                </template>
+                <template if:true={ehModoSimulado}>
+                    Escolha um simulado e clique em Iniciar Simulado.
+                </template>
             </div>
         </template>
 

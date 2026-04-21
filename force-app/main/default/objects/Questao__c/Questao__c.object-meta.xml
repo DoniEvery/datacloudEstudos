@@ -112,6 +112,11 @@
                     <default>false</default>
                     <label>Flashcard</label>
                 </value>
+                <value>
+                    <fullName>Simulado</fullName>
+                    <default>false</default>
+                    <label>Simulado</label>
+                </value>
             </valueSetDefinition>
         </valueSet>
     </fields>
