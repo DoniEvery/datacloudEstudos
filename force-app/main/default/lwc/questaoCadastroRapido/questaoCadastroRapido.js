@@ -16,11 +16,11 @@ export default class QuestaoCadastroRapido extends LightningElement {
     @track topicoId = '';
     @track nome = '';
     @track enunciado = '';
-    @track tipoQuestao = 'Simulado';
+    @track tipoQuestao = 'Exercicio';
     @track nivelDificuldade = 'Facil';
-    @track colecaoSimulado = '';
+    @track colecaoSimulado = 'Fundamentos Data Cloud';
     @track nivelSimulado = 1;
-    @track origemSimulado = '';
+    @track origemSimulado = 'Salesforce';
     @track subtopico = '';
     @track codigoInterno = '';
     @track ativa = true;
