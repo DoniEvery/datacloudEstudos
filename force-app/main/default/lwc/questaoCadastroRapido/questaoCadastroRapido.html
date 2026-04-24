@@ -24,14 +24,6 @@
                         options={dificuldadeOptions} onchange={handleDificuldadeChange} required></lightning-combobox>
                 </div>
 
-                <div class="slds-col slds-size_1-of-1">
-                    <lightning-input label="Nome da Questão" value={nome} onchange={handleNomeChange}></lightning-input>
-                </div>
-                <div class="slds-col slds-size_1-of-1">
-                    <lightning-textarea label="Enunciado" value={enunciado} onchange={handleEnunciadoChange}
-                        required></lightning-textarea>
-                </div>
-
                 <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
                     <lightning-combobox label="Coleção" value={colecaoSimulado} options={colecoesSimulado}
                         onchange={handleColecaoChange}></lightning-combobox>
@@ -44,14 +36,21 @@
                     <lightning-input label="Origem" value={origemSimulado}
                         onchange={handleOrigemChange}></lightning-input>
                 </div>
+                <!-- <div class="slds-col slds-size_1-of-1">
+                    <lightning-input label="Nome da Questão" value={nome} onchange={handleNomeChange}></lightning-input>
+                </div> -->
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-textarea label="Enunciado" value={enunciado} onchange={handleEnunciadoChange}
+                        required></lightning-textarea>
+                </div>
+
             </div>
 
             <h3 class="slds-section__title slds-m-top_medium">Alternativas</h3>
             <template for:each={alternativaView} for:item="alt">
                 <div key={alt.idx} class="slds-box slds-m-bottom_small slds-theme_shade">
                     <div class="slds-grid slds-vertical-align-center">
-                        <input type="radio" name="correta" data-index={alt.idx} checked={alt.checked}
-                            onchange={handleRadioChange} class="slds-m-right_small" />
+
                         <div class="slds-col">
                             <lightning-textarea label="Texto da Alternativa" value={alt.texto} data-index={alt.idx}
                                 onchange={handleAlternativaTextoChange} required></lightning-textarea>
@@ -59,14 +58,18 @@
                                 data-index={alt.idx} onchange={handleAlternativaExplicacaoChange}></lightning-textarea>
                         </div>
                     </div>
+                    <input type="radio" name="correta" data-index={alt.idx} checked={alt.checked}
+                        onchange={handleRadioChange} class="slds-m-right_small slds-m-left_small " />
                 </div>
             </template>
         </div>
 
-        <div class="slds-p-around_small slds-border_top">
+        <div class="slds-p-around_small slds-border_top slds-align_right"
+            style="display: flex;align-items: center; justify-content: flex-end;">
+            <lightning-button label="Limpar" onclick={resetForm} disabled={isSaving}
+                class="slds-m-right_small"></lightning-button>
             <lightning-button variant="brand" label="Salvar Questão" onclick={handleSalvar} disabled={isSaving}
                 class="slds-m-right_small"></lightning-button>
-            <lightning-button label="Limpar" onclick={resetForm} disabled={isSaving}></lightning-button>
         </div>
     </lightning-card>
 </template>
