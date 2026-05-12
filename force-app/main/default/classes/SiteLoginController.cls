@@ -7,6 +7,12 @@ global with sharing class SiteLoginController {
 
     global PageReference login() {
         String startUrl = System.currentPageReference().getParameters().get('startURL');
+        
+        // Se startURL contém login, remover startUrl (evitar loop recursivo)
+        if (String.isNotBlank(startUrl) && (startUrl.toLowerCase().contains('/login'))) {
+            startUrl = null;
+        }
+        
         return Site.login(username, password, startUrl);
     }
     

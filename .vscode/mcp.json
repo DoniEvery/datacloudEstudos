@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "Salesforce DX": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp@latest", 
+               "--orgs", "DEFAULT_TARGET_ORG", 
+               "--toolsets", "all"]
+    },
+    "postman": {
+      "type": "http",
+      "url": "https://mcp.postman.com/minimal"
+    }
+  }
+}
