@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TipoQuestao__c</fullName>
+    <label>Tipo de Questão</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>MultiplaEscolha</fullName>
+                <default>false</default>
+                <label>Múltipla Escolha</label>
+            </value>
+            <value>
+                <fullName>MultiplaResposta</fullName>
+                <default>false</default>
+                <label>Múltipla Resposta</label>
+            </value>
+            <value>
+                <fullName>VerdadeiroFalso</fullName>
+                <default>false</default>
+                <label>Verdadeiro/Falso</label>
+            </value>
+            <value>
+                <fullName>Flashcard</fullName>
+                <default>false</default>
+                <label>Flashcard</label>
+            </value>
+            <value>
+                <fullName>Simulado</fullName>
+                <default>false</default>
+                <label>Simulado</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

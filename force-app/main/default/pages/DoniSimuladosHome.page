@@ -1,0 +1,11 @@
+<apex:page>
+    <apex:includeLightning />
+    <div id="lightning"></div>
+    <script>
+        $Lightning.use("c:questaoEstudo", function() {
+          $Lightning.createComponent("c:questaoEstudo", {}, "lightning", function(cmp) {
+            console.log("questaoEstudo component loaded");
+          });
+        });
+    </script>
+</apex:page>

@@ -4,7 +4,6 @@ import criarQuestaoComAlternativas from '@salesforce/apex/QuestaoCadastroControl
 import getCertificacoes from '@salesforce/apex/QuestaoCadastroController.getCertificacoes';
 import getDominios from '@salesforce/apex/QuestaoCadastroController.getDominios';
 import getTopicos from '@salesforce/apex/QuestaoCadastroController.getTopicos';
-import getColecoesSimulado from '@salesforce/apex/QuestaoCadastroController.getColecoesSimulado';
 import getSubtopicos from '@salesforce/apex/QuestaoCadastroController.getSubtopicos';
 
 export default class QuestaoCadastroRapido extends LightningElement {
@@ -18,8 +17,8 @@ export default class QuestaoCadastroRapido extends LightningElement {
     @track enunciado = '';
     @track tipoQuestao = 'Exercicio';
     @track nivelDificuldade = 'Facil';
-    @track colecaoSimulado = 'Fundamentos Data Cloud';
-    @track nivelSimulado = 3;
+    @track colecaoSimulado = 'Trailhead';
+    @track nivelSimulado = 1;
     @track origemSimulado = 'Salesforce';
     @track subtopico = '';
     @track codigoInterno = '';
@@ -29,7 +28,6 @@ export default class QuestaoCadastroRapido extends LightningElement {
     @track certificacoes = [];
     @track dominios = [];
     @track topicos = [];
-    @track colecoesSimulado = [];
     @track subtopicos = [];
 
     // Opções Fixas
@@ -45,6 +43,15 @@ export default class QuestaoCadastroRapido extends LightningElement {
             { label: 'Fácil', value: 'Facil' },
             { label: 'Médio', value: 'Medio' },
             { label: 'Difícil', value: 'Dificil' }
+        ];
+    }
+
+    get colecaoOptions () {
+        return [
+            { label: 'Trailhead', value: 'Trailhead' },
+            { label: 'Excercisios Help', value: 'Excercisios Help' },
+            { label: 'Copilot', value: 'Copilot' },
+            { label: 'Simulados', value: 'Simulados' }
         ];
     }
 
@@ -70,7 +77,6 @@ export default class QuestaoCadastroRapido extends LightningElement {
         }
     }
 
-    @wire( getColecoesSimulado ) wiredCol ( { data } ) { if ( data ) this.colecoesSimulado = data; }
     @wire( getSubtopicos ) wiredSub ( { data } ) { if ( data ) this.subtopicos = data; }
 
     async buscarDominios ( certId ) {
@@ -119,8 +125,8 @@ export default class QuestaoCadastroRapido extends LightningElement {
         this.enunciado = '';
         this.tipoQuestao = 'Exercicio'; // Volta ao padrão
         this.nivelDificuldade = 'Facil'; // Volta ao padrão
-        this.colecaoSimulado = 'Fundamentos Data Cloud';
-        this.nivelSimulado = 3;
+        this.colecaoSimulado = 'Trailhead';
+        this.nivelSimulado = 1;
         this.origemSimulado = 'Salesforce';
         this.alternativaView = [
             { idx: 0, texto: '', explicacao: '', checked: true },

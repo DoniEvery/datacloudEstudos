@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TipoSessao__c</fullName>
+    <label>Tipo de Sessão</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>RevisaoDiaria</fullName>
+                <default>true</default>
+                <label>Revisão Diária</label>
+            </value>
+            <value>
+                <fullName>TreinoLivre</fullName>
+                <default>false</default>
+                <label>Treino Livre</label>
+            </value>
+            <value>
+                <fullName>Simulado</fullName>
+                <default>false</default>
+                <label>Simulado</label>
+            </value>
+            <value>
+                <fullName>Reforco</fullName>
+                <default>false</default>
+                <label>Reforço</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
