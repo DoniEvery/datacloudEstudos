@@ -35,6 +35,7 @@ export default class QuestaoEstudo extends LightningElement {
     timerIntervalId;
     acertosSimulado = 0;
     errosSimulado = 0;
+    erroCarregamento = '';
 
     connectedCallback() {
         this.carregarCertificacoes();
@@ -45,17 +46,20 @@ export default class QuestaoEstudo extends LightningElement {
     }
 
     carregarCertificacoes() {
+        this.erroCarregamento = '';
         getCertificacoes()
             .then((data) => {
                 this.certificacoes = data;
             })
             .catch((error) => {
                 console.error('Erro ao carregar certificações:', error);
+                this.erroCarregamento = this.extrairMensagemErro(error, 'Não foi possível carregar as certificações.');
             });
     }
 
     handleCertificacaoChange(event) {
         this.certificacaoSelecionada = event.target.value;
+        this.erroCarregamento = '';
         this.modoEstudo = null;
         this.topicoSelecionado = null;
         this.simuladosDisponiveis = [];
@@ -67,6 +71,7 @@ export default class QuestaoEstudo extends LightningElement {
 
     handleModoChange(event) {
         this.modoEstudo = event.target.value || null;
+        this.erroCarregamento = '';
         this.topicoSelecionado = null;
         this.simuladosDisponiveis = [];
         this.simuladoSelecionado = null;
@@ -92,12 +97,14 @@ export default class QuestaoEstudo extends LightningElement {
 
     handleSimuladoChange(event) {
         this.simuladoSelecionado = event.target.value;
+        this.erroCarregamento = '';
         this.resetQuestoes();
         // Questões serão carregadas somente ao clicar em "Iniciar Simulado"
     }
 
     handleTopicoChange(event) {
         this.topicoSelecionado = event.target.value;
+        this.erroCarregamento = '';
         this.resetQuestoes();
         this.subtopicos = [];
         // Questões serão carregadas somente ao clicar em "Iniciar Estudo Livre"
@@ -147,6 +154,20 @@ export default class QuestaoEstudo extends LightningElement {
         }));
     }
 
+    get certificacoesRenderizadas() {
+        return (this.certificacoes || []).map((certificacao) => ({
+            ...certificacao,
+            selected: certificacao.id === this.certificacaoSelecionada
+        }));
+    }
+
+    get topicosRenderizados() {
+        return (this.topicos || []).map((topico) => ({
+            ...topico,
+            selected: topico.id === this.topicoSelecionado
+        }));
+    }
+
     get podeIniciar() {
         return this.temFiltroValido && !this.isLoading;
     }
@@ -178,9 +199,11 @@ export default class QuestaoEstudo extends LightningElement {
         this.mensagemResultado = '';
         this.alternativaSelecionada = null;
         this.mostrarResultado = false;
+        this.erroCarregamento = '';
     }
 
     carregarTopicos() {
+        this.erroCarregamento = '';
         getTopicos({ certificacaoId: this.certificacaoSelecionada })
             .then((data) => {
                 this.topicos = data;
@@ -188,11 +211,13 @@ export default class QuestaoEstudo extends LightningElement {
             })
             .catch((error) => {
                 console.error('Erro ao carregar tópicos:', error);
+                this.erroCarregamento = this.extrairMensagemErro(error, 'Não foi possível carregar os tópicos.');
                 this.isLoading = false;
             });
     }
 
     carregarSimuladosDisponiveis() {
+        this.erroCarregamento = '';
         getSimuladosDisponiveis({ certificacaoId: this.certificacaoSelecionada })
             .then((data) => {
                 this.simuladosDisponiveis = data || [];
@@ -201,6 +226,7 @@ export default class QuestaoEstudo extends LightningElement {
             })
             .catch((error) => {
                 console.error('Erro ao carregar simulados disponíveis:', error);
+                this.erroCarregamento = this.extrairMensagemErro(error, 'Não foi possível carregar os simulados disponíveis.');
                 this.isLoading = false;
             });
     }
@@ -214,6 +240,7 @@ export default class QuestaoEstudo extends LightningElement {
     }
 
     carregarQuestoes() {
+        this.erroCarregamento = '';
         getQuestoes({
             topicoId: null,
             dominioId: this.ehModoLivre ? this.topicoSelecionado : null,
@@ -223,7 +250,8 @@ export default class QuestaoEstudo extends LightningElement {
             colecaoSimulado: this.simuladoSelecionado
         })
             .then((result) => {
-                const questoesBase = this.ehModoSimulado ? this.embaralharArray([...result]).slice(0, 60) : result;
+                const listaQuestoes = Array.isArray(result) ? result : [];
+                const questoesBase = this.ehModoSimulado ? this.embaralharArray(listaQuestoes).slice(0, 60) : listaQuestoes;
                 this.questoes = questoesBase;
                 this.totalQuestoes = questoesBase.length;
                 
@@ -240,8 +268,37 @@ export default class QuestaoEstudo extends LightningElement {
             })
             .catch((error) => {
                 console.error('Erro ao carregar questões:', error);
+                this.erroCarregamento = this.extrairMensagemErro(error, 'Não foi possível carregar as questões para este filtro.');
                 this.isLoading = false;
             });
+    }
+
+    extrairMensagemErro(error, fallback) {
+        const mensagemPadrao = fallback || 'Ocorreu um erro ao carregar os dados.';
+
+        if (!error) {
+            return mensagemPadrao;
+        }
+
+        const body = error.body;
+        if (Array.isArray(body) && body.length > 0) {
+            const msgs = body
+                .map((item) => item?.message)
+                .filter((msg) => !!msg);
+            if (msgs.length) {
+                return msgs.join(' | ');
+            }
+        }
+
+        if (body?.message) {
+            return body.message;
+        }
+
+        if (error.message) {
+            return error.message;
+        }
+
+        return mensagemPadrao;
     }
 
     exibirQuestao(index) {

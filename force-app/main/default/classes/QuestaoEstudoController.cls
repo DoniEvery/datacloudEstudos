@@ -1,4 +1,23 @@
 public without sharing class QuestaoEstudoController {
+    public class OptionItem {
+        @AuraEnabled public String id;
+        @AuraEnabled public String name;
+        @AuraEnabled public String dominio;
+
+        public OptionItem(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
+
+    public class SimuladoItem {
+        @AuraEnabled public String id;
+        @AuraEnabled public String name;
+        @AuraEnabled public String colecao;
+        @AuraEnabled public Decimal nivel;
+        @AuraEnabled public String origem;
+    }
+
     private static String pickField(Map<String, Schema.SObjectField> fieldsMap, List<String> candidates) {
         for (String fieldName : candidates) {
             if (fieldsMap.containsKey(fieldName)) {
@@ -117,7 +136,7 @@ public without sharing class QuestaoEstudoController {
     }
 
     private static Boolean alternativasValidas(List<Map<String, Object>> alternativas) {
-        if (alternativas == null || alternativas.size() < 4) {
+        if (alternativas == null || alternativas.size() < 2) {
             return false;
         }
 
@@ -130,7 +149,7 @@ public without sharing class QuestaoEstudoController {
             }
         }
 
-        return totalCorretas == 1;
+        return totalCorretas >= 1;
     }
     
     private static List<SObject> ordenarQuestoesPorRevisao(List<SObject> questoes) {
@@ -351,8 +370,8 @@ public without sharing class QuestaoEstudoController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getSimuladosDisponiveis(Id certificacaoId) {
-        List<Map<String, Object>> result = new List<Map<String, Object>>();
+    public static List<SimuladoItem> getSimuladosDisponiveis(Id certificacaoId) {
+        List<SimuladoItem> result = new List<SimuladoItem>();
         if (certificacaoId == null) {
             return result;
         }
@@ -393,13 +412,13 @@ public without sharing class QuestaoEstudoController {
                 label += ' · ' + origem;
             }
 
-            result.add(new Map<String, Object>{
-                'id' => colecao,
-                'name' => label,
-                'colecao' => colecao,
-                'nivel' => nivel,
-                'origem' => origem
-            });
+            SimuladoItem item = new SimuladoItem();
+            item.id = colecao;
+            item.name = label;
+            item.colecao = colecao;
+            item.nivel = nivel;
+            item.origem = origem;
+            result.add(item);
         }
 
         return result;
@@ -465,26 +484,23 @@ public without sharing class QuestaoEstudoController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getCertificacoes() {
-        List<Map<String, Object>> result = new List<Map<String, Object>>();
+    public static List<OptionItem> getCertificacoes() {
+        List<OptionItem> result = new List<OptionItem>();
 
         for (Certificacao__c c : [
             SELECT Id, Name
             FROM Certificacao__c
             ORDER BY Name ASC
         ]) {
-            result.add(new Map<String, Object>{
-                'id' => c.Id,
-                'name' => c.Name
-            });
+            result.add(new OptionItem(String.valueOf(c.Id), c.Name));
         }
 
         return result;
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Map<String, Object>> getTopicos(Id certificacaoId) {
-        List<Map<String, Object>> result = new List<Map<String, Object>>();
+    public static List<OptionItem> getTopicos(Id certificacaoId) {
+        List<OptionItem> result = new List<OptionItem>();
         if (certificacaoId == null) {
             return result;
         }
@@ -495,11 +511,9 @@ public without sharing class QuestaoEstudoController {
             WHERE Certificacao__c = :certificacaoId
             ORDER BY Name ASC
         ]) {
-            Map<String, Object> tMap = new Map<String, Object>();
-            tMap.put('id', d.Id);
-            tMap.put('name', d.Name);
-            tMap.put('dominio', d.Name);
-            result.add(tMap);
+            OptionItem item = new OptionItem(String.valueOf(d.Id), d.Name);
+            item.dominio = d.Name;
+            result.add(item);
         }
         
         return result;

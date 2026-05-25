@@ -5,8 +5,8 @@
             <label>Selecione a Certificação:</label>
             <select onchange={handleCertificacaoChange} disabled={isLoading}>
                 <option value="">-- Escolha uma certificação --</option>
-                <template for:each={certificacoes} for:item="certificacao">
-                    <option key={certificacao.id} value={certificacao.id}>
+                <template for:each={certificacoesRenderizadas} for:item="certificacao">
+                    <option key={certificacao.id} value={certificacao.id} selected={certificacao.selected}>
                         {certificacao.name}
                     </option>
                 </template>
@@ -17,7 +17,7 @@
             <div class="selector-section">
                 <label>Modo de Estudo:</label>
                 <select onchange={handleModoChange} disabled={isLoading}>
-                    <option value="" selected={modoNaoSelecionado}>-- Escolha um modo --</option>
+                    <option value="">-- Escolha um modo --</option>
                     <template for:each={modosEstudo} for:item="modo">
                         <option key={modo.value} value={modo.value} selected={modo.selected}>
                             {modo.label}
@@ -33,8 +33,8 @@
                 <label>Selecione o Tópico:</label>
                 <select onchange={handleTopicoChange} disabled={isLoading}>
                     <option value="">-- Escolha um tópico --</option>
-                    <template for:each={topicos} for:item="topico">
-                        <option key={topico.id} value={topico.id}>
+                    <template for:each={topicosRenderizados} for:item="topico">
+                        <option key={topico.id} value={topico.id} selected={topico.selected}>
                             {topico.name}
                         </option>
                     </template>
@@ -46,7 +46,7 @@
             <div class="selector-section selector-section--simulado">
                 <label>Escolha o Simulado:</label>
                 <select onchange={handleSimuladoChange} disabled={isLoading}>
-                    <option value="" selected={semSimuladoSelecionado}>-- Escolha um simulado --</option>
+                    <option value="">-- Escolha um simulado --</option>
                     <template for:each={simuladosRenderizados} for:item="simulado">
                         <option key={simulado.id} value={simulado.id} selected={simulado.selected}>
                             {simulado.name}
@@ -241,6 +241,10 @@
         <!-- Loading -->
         <template if:true={isLoading}>
             <div class="loading">Carregando...</div>
+        </template>
+
+        <template if:true={erroCarregamento}>
+            <div class="mensagem-info">{erroCarregamento}</div>
         </template>
     </div>
 </template>
