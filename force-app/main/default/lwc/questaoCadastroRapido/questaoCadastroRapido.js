@@ -16,9 +16,9 @@ export default class QuestaoCadastroRapido extends LightningElement {
     @track nome = '';
     @track enunciado = '';
     @track tipoQuestao = 'Exercicio';
-    @track nivelDificuldade = 'Facil';
-    @track colecaoSimulado = 'Trailhead';
-    @track nivelSimulado = 1;
+    @track nivelDificuldade = 'Difícil';
+    @track colecaoSimulado = 'Simulados';
+    @track nivelSimulado = 5;
     @track origemSimulado = 'Salesforce';
     @track subtopico = '';
     @track codigoInterno = '';
@@ -124,9 +124,9 @@ export default class QuestaoCadastroRapido extends LightningElement {
         this.nome = '';
         this.enunciado = '';
         this.tipoQuestao = 'Exercicio'; // Volta ao padrão
-        this.nivelDificuldade = 'Facil'; // Volta ao padrão
-        this.colecaoSimulado = 'Trailhead';
-        this.nivelSimulado = 1;
+        this.nivelDificuldade = 'Difícil'; // Volta ao padrão
+        this.colecaoSimulado = 'Simulados';
+        this.nivelSimulado = 5;
         this.origemSimulado = 'Salesforce';
         this.alternativaView = [
             { idx: 0, texto: '', explicacao: '', checked: true },
